@@ -32,6 +32,7 @@ void add_pairs(void);
 void sort_pairs(void);
 void lock_pairs(void);
 void print_winner(void);
+bool compare_strings(string one, string two);
 
 int main(int argc, string argv[])
 {
@@ -136,4 +137,14 @@ void print_winner(void)
 {
     // TODO
     return;
+}
+
+bool compare_strings(string one, string two) {
+    for (int i = 0; one[i] != '\0'; i++) {
+        if (one[i] != two[i]) return false;
+    }
+    for (int i = 0; two[i] != '\0'; i++) {
+        if (two[i] != one[i]) return false;
+    }
+    return true;
 }
