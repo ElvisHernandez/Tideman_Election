@@ -26,10 +26,10 @@ typedef struct
 // Array of candidates
 string candidates[MAX];
 pair pairs[MAX * (MAX - 1) / 2];
+int strengths[MAX * (MAX - 1) / 2];
 
 int pair_count;
 int candidate_count;
-int strengths[MAX * (MAX - 1) / 2];
 
 // Function prototypes
 bool vote(int rank, string name, int ranks[]);
@@ -200,12 +200,12 @@ void sort_pairs(void)
         pair_strengths[i] = a_pair_strength;
     }
 
-    printf("Before sort\n");
+    // printf("Before sort\n");
 
-    for (int i = 0; i < pair_count; i++)
-    {
-        printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
-    }
+    // for (int i = 0; i < pair_count; i++)
+    // {
+    //     printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
+    // }
 
     merge_sort(pair_strengths, pair_count);
 
@@ -214,19 +214,19 @@ void sort_pairs(void)
         pairs[i] = pair_strengths[pair_count - i - 1].a_pair;
     }
 
-    printf("after sort\n");
+    // printf("after sort\n");
 
-    for (int i = 0; i < pair_count; i++)
-    {
-        printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
-    }
+    // for (int i = 0; i < pair_count; i++)
+    // {
+    //     printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
+    // }
 
-    printf("These are the sorted pairs\n");
+    // printf("These are the sorted pairs\n");
 
-    for (int i = 0; i < pair_count; i++)
-    {
-        printf("(winner: %i, loser: %i)\n", pairs[i].winner, pairs[i].loser);
-    }
+    // for (int i = 0; i < pair_count; i++)
+    // {
+    //     printf("(winner: %i, loser: %i)\n", pairs[i].winner, pairs[i].loser);
+    // }
 
     // for (int i = 0; i < pair_count; i++) {
     //     pairs[i] = pair_strengths
@@ -239,6 +239,45 @@ void sort_pairs(void)
 // Lock pairs into the candidate graph in order, without creating cycles
 void lock_pairs(void)
 {
+    int cycles[pair_count];
+    int cycle_counter = 0;
+    int is_cycle;
+    for (int i = 0; i < pair_count; i++)
+    {
+        is_cycle = 0;
+        int row = pairs[i].winner;
+        int col = pairs[i].loser;
+        for (int j = 0; j < cycle_counter; j++)
+        {
+            if (col == cycles[j])
+            {
+                is_cycle = 1;
+            }
+        }
+        if (is_cycle == 1)
+        {
+            continue;
+        }
+        else
+        {
+            locked[row][col] = true;
+            cycles[i] = row;
+            cycle_counter++;
+        }
+    }
+
+    for (int i = 0; i < candidate_count; i++)
+    {
+        for (int j = 0; j < candidate_count; j++)
+        {
+            printf("%i ", locked[i][j]);
+            if (j == candidate_count - 1)
+            {
+                printf("\n");
+            }
+        }
+    }
+
     // TODO
     return;
 }
