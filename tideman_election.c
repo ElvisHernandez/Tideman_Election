@@ -89,26 +89,43 @@ int main(int argc, string argv[])
 
 
 
-        for (int i = 0; i < candidate_count; i++) {
-            for (int j = 0; j < candidate_count; j++) {
-                printf("%i ", preferences[i][j]);
-                if (j == candidate_count - 1) {
-                    printf("\n");
-                }
-            }
-        }
+    //     for (int i = 0; i < candidate_count; i++) {
+    //         for (int j = 0; j < candidate_count; j++) {
+    //             printf("%i ", preferences[i][j]);
+    //             if (j == candidate_count - 1) {
+    //                 printf("\n");
+    //             }
+    //         }
+    //     }
 
 
 
 
-        printf("Above is the preferences matrix\n");
+//        printf("Above is the preferences matrix\n");
 
 
 
-        printf("\n");
+  //      printf("\n");
     }
 
     add_pairs();
+
+
+
+    for (int i = 0; i < candidate_count; i++) {
+        for (int j = 0; j < candidate_count; j++) {
+            printf("%i ", preferences[i][j]);
+            if (j == candidate_count - 1) {
+                printf("\n");
+            }
+        }
+    }
+    
+    for (int i = 0; i < pair_count; i++) {
+        printf("These are the pairs: {Winner: %i, Loser: %i}\n", pairs[i].winner,pairs[i].loser);
+    }
+
+
     sort_pairs();
     lock_pairs();
     print_winner();
@@ -143,7 +160,18 @@ void record_preferences(int ranks[])
 
 // Record pairs of candidates where one is preferred over the other
 void add_pairs(void)
-{
+{   
+    for (int i = 0; i < candidate_count; i++) {
+        for (int j = 0; j < candidate_count; j++) {
+            if (preferences[i][j] > 0) {
+                pair a_pair;
+                a_pair.winner = i;
+                a_pair.loser = j;
+                pairs[pair_count] = a_pair;
+                pair_count++;
+            }
+        }
+    }
     // TODO
     return;
 }
