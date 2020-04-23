@@ -266,17 +266,17 @@ void lock_pairs(void)
         }
     }
 
-    for (int i = 0; i < candidate_count; i++)
-    {
-        for (int j = 0; j < candidate_count; j++)
-        {
-            printf("%i ", locked[i][j]);
-            if (j == candidate_count - 1)
-            {
-                printf("\n");
-            }
-        }
-    }
+    // for (int i = 0; i < candidate_count; i++)
+    // {
+    //     for (int j = 0; j < candidate_count; j++)
+    //     {
+    //         printf("%i ", locked[i][j]);
+    //         if (j == candidate_count - 1)
+    //         {
+    //             printf("\n");
+    //         }
+    //     }
+    // }
 
     // TODO
     return;
@@ -285,6 +285,23 @@ void lock_pairs(void)
 // Print the winner of the election
 void print_winner(void)
 {
+    int row_max = 0;
+    int winning_row;
+    for (int i = 0; i < candidate_count; i++)
+    {
+        int col_max = 0;
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (locked[i][j] > 0)
+                col_max += 1;
+        }
+        if (col_max > row_max)
+        {
+            row_max = col_max;
+            winning_row = i;
+        }
+    }
+    printf("%s\n", candidates[winning_row]);
     // TODO
     return;
 }
