@@ -15,8 +15,13 @@ typedef struct
 {
     int winner;
     int loser;
-}
-pair;
+} pair;
+
+typedef struct
+{
+    int strength;
+    pair a_pair;
+} pair_strength;
 
 // Array of candidates
 string candidates[MAX];
@@ -24,6 +29,7 @@ pair pairs[MAX * (MAX - 1) / 2];
 
 int pair_count;
 int candidate_count;
+int strengths[MAX * (MAX - 1) / 2];
 
 // Function prototypes
 bool vote(int rank, string name, int ranks[]);
@@ -33,6 +39,8 @@ void sort_pairs(void);
 void lock_pairs(void);
 void print_winner(void);
 bool compare_strings(string one, string two);
+int merge_sort(pair_strength nums[], int nums_length);
+int merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len);
 
 int main(int argc, string argv[])
 {
@@ -87,44 +95,38 @@ int main(int argc, string argv[])
 
         record_preferences(ranks);
 
+        //     for (int i = 0; i < candidate_count; i++) {
+        //         for (int j = 0; j < candidate_count; j++) {
+        //             printf("%i ", preferences[i][j]);
+        //             if (j == candidate_count - 1) {
+        //                 printf("\n");
+        //             }
+        //         }
+        //     }
 
+        //        printf("Above is the preferences matrix\n");
 
-    //     for (int i = 0; i < candidate_count; i++) {
-    //         for (int j = 0; j < candidate_count; j++) {
-    //             printf("%i ", preferences[i][j]);
-    //             if (j == candidate_count - 1) {
-    //                 printf("\n");
-    //             }
-    //         }
-    //     }
-
-
-
-
-//        printf("Above is the preferences matrix\n");
-
-
-
-  //      printf("\n");
+        //      printf("\n");
     }
 
     add_pairs();
 
-
-
-    for (int i = 0; i < candidate_count; i++) {
-        for (int j = 0; j < candidate_count; j++) {
+    for (int i = 0; i < candidate_count; i++)
+    {
+        for (int j = 0; j < candidate_count; j++)
+        {
             printf("%i ", preferences[i][j]);
-            if (j == candidate_count - 1) {
+            if (j == candidate_count - 1)
+            {
                 printf("\n");
             }
         }
     }
-    
-    for (int i = 0; i < pair_count; i++) {
-        printf("These are the pairs: {Winner: %i, Loser: %i}\n", pairs[i].winner,pairs[i].loser);
-    }
 
+    for (int i = 0; i < pair_count; i++)
+    {
+        printf("These are the pairs: {Winner: %i, Loser: %i}\n", pairs[i].winner, pairs[i].loser);
+    }
 
     sort_pairs();
     lock_pairs();
@@ -135,8 +137,10 @@ int main(int argc, string argv[])
 // Update ranks given a new vote
 bool vote(int rank, string name, int ranks[])
 {
-    for (int i = 0; i < candidate_count; i++) {
-        if (compare_strings(name,candidates[i])) {
+    for (int i = 0; i < candidate_count; i++)
+    {
+        if (compare_strings(name, candidates[i]))
+        {
             ranks[rank] = i;
             return true;
         }
@@ -149,8 +153,10 @@ bool vote(int rank, string name, int ranks[])
 void record_preferences(int ranks[])
 {
     int voted_candidates[candidate_count];
-    for (int i = 0; i < candidate_count; i++) {
-        for (int j = i+1; j < candidate_count; j++) {
+    for (int i = 0; i < candidate_count; i++)
+    {
+        for (int j = i + 1; j < candidate_count; j++)
+        {
             preferences[ranks[i]][ranks[j]]++;
         }
     }
@@ -160,14 +166,18 @@ void record_preferences(int ranks[])
 
 // Record pairs of candidates where one is preferred over the other
 void add_pairs(void)
-{   
-    for (int i = 0; i < candidate_count; i++) {
-        for (int j = 0; j < candidate_count; j++) {
-            if (preferences[i][j] > 0) {
+{
+    for (int i = 0; i < candidate_count; i++)
+    {
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (preferences[i][j] > 0)
+            {
                 pair a_pair;
                 a_pair.winner = i;
                 a_pair.loser = j;
                 pairs[pair_count] = a_pair;
+                strengths[pair_count] = preferences[i][j];
                 pair_count++;
             }
         }
@@ -179,6 +189,49 @@ void add_pairs(void)
 // Sort pairs in decreasing order by strength of victory
 void sort_pairs(void)
 {
+
+    pair_strength pair_strengths[pair_count];
+
+    for (int i = 0; i < pair_count; i++)
+    {
+        pair_strength a_pair_strength;
+        a_pair_strength.strength = strengths[i];
+        a_pair_strength.a_pair = pairs[i];
+        pair_strengths[i] = a_pair_strength;
+    }
+
+    printf("Before sort\n");
+
+    for (int i = 0; i < pair_count; i++)
+    {
+        printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
+    }
+
+    merge_sort(pair_strengths, pair_count);
+
+    for (int i = 0; i < pair_count; i++)
+    {
+        pairs[i] = pair_strengths[pair_count - i - 1].a_pair;
+    }
+
+    printf("after sort\n");
+
+    for (int i = 0; i < pair_count; i++)
+    {
+        printf("strength: %i, (winner: %i, loser: %i)\n", pair_strengths[i].strength, pair_strengths[i].a_pair.winner, pair_strengths[i].a_pair.loser);
+    }
+
+    printf("These are the sorted pairs\n");
+
+    for (int i = 0; i < pair_count; i++)
+    {
+        printf("(winner: %i, loser: %i)\n", pairs[i].winner, pairs[i].loser);
+    }
+
+    // for (int i = 0; i < pair_count; i++) {
+    //     pairs[i] = pair_strengths
+    // }
+
     // TODO
     return;
 }
@@ -197,18 +250,77 @@ void print_winner(void)
     return;
 }
 
-bool compare_strings(string one, string two) {
-    for (int i = 0; one[i] != '\0'; i++) {
-        if (one[i] != two[i]) return false;
+bool compare_strings(string one, string two)
+{
+    for (int i = 0; one[i] != '\0'; i++)
+    {
+        if (one[i] != two[i])
+            return false;
     }
-    for (int i = 0; two[i] != '\0'; i++) {
-        if (two[i] != one[i]) return false;
+    for (int i = 0; two[i] != '\0'; i++)
+    {
+        if (two[i] != one[i])
+            return false;
     }
     return true;
 }
 
+int merge_sort(pair_strength nums[], int nums_length)
+{
+    if (nums_length == 1)
+        return 0;
+    int mid = nums_length / 2;
+    pair_strength la[mid];
+    pair_strength ra[nums_length - mid];
+    for (int i = 0; i < mid; i++)
+    {
+        la[i] = nums[i];
+    }
+    for (int i = 0; i < nums_length - mid; i++)
+    {
+        ra[i] = nums[mid + i];
+    }
+    merge_sort(la, mid);
+    merge_sort(ra, nums_length - mid);
+    merge_halfs(nums, la, mid, ra, nums_length - mid);
+}
 
+int merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len)
+{
+    pair_strength merged_array[la_len + ra_len];
+    int la_i = 0;
+    int ra_i = 0; // these are the left, right, and merged arrays respectively
+    int ma_i = 0;
 
-
-
-
+    while (la_i < la_len && ra_i < ra_len)
+    {
+        if (la[la_i].strength < ra[ra_i].strength)
+        {
+            merged_array[ma_i] = la[la_i];
+            la_i++;
+        }
+        else
+        {
+            merged_array[ma_i] = ra[ra_i];
+            ra_i++;
+        }
+        ma_i++;
+    }
+    while (la_i < la_len)
+    {
+        merged_array[ma_i] = la[la_i];
+        la_i++;
+        ma_i++;
+    }
+    while (ra_i < ra_len)
+    {
+        merged_array[ma_i] = ra[ra_i];
+        ra_i++;
+        ma_i++;
+    }
+    for (int i = 0; i < (la_len + ra_len); i++)
+    {
+        nums[i] = merged_array[i];
+        //printf("Merged array element %i: %i\n", i+1,merged_array[i]);
+    }
+}
