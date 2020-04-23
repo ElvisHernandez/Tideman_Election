@@ -39,8 +39,8 @@ void sort_pairs(void);
 void lock_pairs(void);
 void print_winner(void);
 bool compare_strings(string one, string two);
-int merge_sort(pair_strength nums[], int nums_length);
-int merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len);
+void merge_sort(pair_strength nums[], int nums_length);
+void merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len);
 
 int main(int argc, string argv[])
 {
@@ -128,6 +128,8 @@ int main(int argc, string argv[])
         printf("These are the pairs: {Winner: %i, Loser: %i}\n", pairs[i].winner, pairs[i].loser);
     }
 
+    printf("The pair count is: %i\n", pair_count);
+
     sort_pairs();
     lock_pairs();
     print_winner();
@@ -167,19 +169,30 @@ void record_preferences(int ranks[])
 // Record pairs of candidates where one is preferred over the other
 void add_pairs(void)
 {
-    for (int i = 0; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count - 1; i++)
     {
-        for (int j = 0; j < candidate_count; j++)
+        for (int j = i + 1; j < candidate_count; j++)
         {
-            if (preferences[i][j] > 0)
+            int ij = preferences[i][j];
+            int ji = preferences[j][i];
+            pair a_pair;
+
+            if (ij == ji)
+                continue;
+            if (ij > ji)
             {
-                pair a_pair;
                 a_pair.winner = i;
                 a_pair.loser = j;
-                pairs[pair_count] = a_pair;
-                strengths[pair_count] = preferences[i][j];
-                pair_count++;
+                strengths[pair_count] = ij;
             }
+            else
+            {
+                a_pair.winner = j;
+                a_pair.loser = i;
+                strengths[pair_count] = ji;
+            }
+            pairs[pair_count] = a_pair;
+            pair_count++;
         }
     }
     // TODO
@@ -321,10 +334,10 @@ bool compare_strings(string one, string two)
     return true;
 }
 
-int merge_sort(pair_strength nums[], int nums_length)
+void merge_sort(pair_strength nums[], int nums_length)
 {
     if (nums_length == 1)
-        return 0;
+        return;
     int mid = nums_length / 2;
     pair_strength la[mid];
     pair_strength ra[nums_length - mid];
@@ -341,7 +354,7 @@ int merge_sort(pair_strength nums[], int nums_length)
     merge_halfs(nums, la, mid, ra, nums_length - mid);
 }
 
-int merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len)
+void merge_halfs(pair_strength nums[], pair_strength la[], int la_len, pair_strength ra[], int ra_len)
 {
     pair_strength merged_array[la_len + ra_len];
     int la_i = 0;
